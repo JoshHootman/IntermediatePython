@@ -1,3 +1,6 @@
+import iso6346
+
+
 class ShippingContainer:
     next_serial = 1337
 
@@ -19,11 +22,16 @@ class ShippingContainer:
         return cls(owner_code, contents=None)
 
     @classmethod
-    def create_with_items(cls, owner_code, items):
+    def create_with_items(cls, owner_code, *items):
         return cls(owner_code, contents=list(items))
+
+    @staticmethod
+    def __make_bic_code(owner_code, serial):
+        return iso6346.create(owner_code= owner_code, serial=str(serial).zfill(6))
 
     def __init__(self, owner_code, contents):
             self.owner_code = owner_code
             self.contents = contents
-            self.next_serial = ShippingContainer.__get_next_serial()
-
+            # self.next_serial = ShippingContainer.__get_next_serial()
+            self.bic = ShippingContainer.__make_bic_code(owner_code=owner_code,
+                                                         serial=ShippingContainer.__get_next_serial())
